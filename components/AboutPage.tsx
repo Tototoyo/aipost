@@ -1,13 +1,15 @@
 import React from 'react';
 import LegalPageLayout from './LegalPageLayout';
+import { useI18n } from '../contexts/I18nContext';
 
 interface PageProps {
     onLoginClick: () => void;
 }
 
 const AboutPage: React.FC<PageProps> = ({ onLoginClick }) => {
+    const { t } = useI18n();
     return (
-        <LegalPageLayout title="About AI Post Generator" onLoginClick={onLoginClick}>
+        <LegalPageLayout title={t('aboutPageTitle')} onLoginClick={onLoginClick}>
             <p>
                 Welcome to AI Post Generator, your go-to tool for creating high-quality, engaging social media content in seconds. We believe that everyone, from small business owners to large marketing teams, deserves access to powerful tools that make content creation simple, fast, and effective.
             </p>

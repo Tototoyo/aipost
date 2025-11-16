@@ -22,6 +22,7 @@ import { supabase } from './supabaseClient';
 import AboutPage from './components/AboutPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsOfServicePage from './components/TermsOfServicePage';
+import ContactPage from './components/ContactPage';
 
 
 const App: React.FC = () => {
@@ -185,6 +186,8 @@ const App: React.FC = () => {
                 return <PrivacyPolicyPage onLoginClick={handleLoginClick} />;
             case '#/terms':
                 return <TermsOfServicePage onLoginClick={handleLoginClick} />;
+            case '#/contact':
+                return <ContactPage onLoginClick={handleLoginClick} />;
             default:
                 return (
                     <div className="min-h-screen bg-brand-dark text-brand-light font-sans flex flex-col">

@@ -82,4 +82,23 @@ export const translations = {
   signupSuccess: { ar: 'تم إنشاء الحساب بنجاح!', en: 'Account created successfully!'},
   userExistsError: { ar: 'المستخدم موجود بالفعل. الرجاء تسجيل الدخول.', en: 'User already exists. Please log in.'},
   invalidCredentialsError: { ar: 'البريد الإلكتروني أو كلمة المرور غير صالحة.', en: 'Invalid email or password.'},
+    
+  // Footer Links
+  aboutLink: { ar: 'حول', en: 'About' },
+  contactLink: { ar: 'اتصل بنا', en: 'Contact' },
+  privacyLink: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' },
+  termsLink: { ar: 'شروط الخدمة', en: 'Terms of Service' },
+  
+  // Legal Page Titles
+  aboutPageTitle: { ar: 'حول مولد المنشورات بالذكاء الاصطناعي', en: 'About AI Post Generator'},
+  privacyPageTitle: { ar: 'سياسة الخصوصية', en: 'Privacy Policy'},
+  termsPageTitle: { ar: 'شروط الخدمة', en: 'Terms of Service'},
+  contactUsTitle: { ar: 'اتصل بنا', en: 'Contact Us' },
+  
+  // Contact Page Content
+  contactUsIntro: { ar: 'يسعدنا أن نسمع منك! سواء كان لديك سؤال حول الميزات، أو اقتراح للتحسين، أو تحتاج إلى دعم، فلا تتردد في التواصل معنا.', en: 'We\'d love to hear from you! Whether you have a question about features, a suggestion for improvement, or need support, please don\'t hesitate to reach out.' },
+  emailSupportTitle: { ar: 'الدعم عبر البريد الإلكتروني', en: 'Email Support' },
+  generalInquiriesText: { ar: 'للاستفسارات العامة، يرجى مراسلتنا على: ', en: 'For general inquiries, please email us at: ' },
+  technicalSupportText: { ar: 'للحصول على الدعم الفني أو المساعدة، يرجى مراسلتنا على: ', en: 'For technical support or assistance, please email us at: ' },
+  responseAimText: { ar: 'نهدف إلى الرد على جميع الاستفسارات في غضون 24-48 ساعة عمل.', en: 'We aim to respond to all inquiries within 24-48 business hours.' },
 };
