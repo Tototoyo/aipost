@@ -110,4 +110,9 @@ export const translations = {
   loadMore: { ar: 'تحميل المزيد', en: 'Load More' },
   noMorePosts: { ar: 'لا يوجد المزيد من المنشورات لعرضها.', en: 'No more posts to show.' },
   viewMoreLink: { ar: 'عرض المعرض الكامل', en: 'View Full Showcase' },
+  
+  // Data Deletion
+  dataRightsTitle: { ar: 'حقوق بياناتك وطلب الحذف', en: 'Your Data Rights & Deletion Request' },
+  dataRightsContent1: { ar: 'لديك الحق في طلب حذف حسابك وجميع البيانات المرتبطة به. لمعالجة هذا الطلب، يرجى إرسال بريد إلكتروني إلى: ', en: 'You have the right to request the deletion of your account and all associated data. To process this request, please send an email to: ' },
+  dataRightsContent2: { ar: 'سوف نتواصل معك لتأكيد طلبك. سيتم حذف بياناتك نهائيًا في غضون 30 يومًا من التأكيد.', en: 'We will contact you to confirm your request. Your data will be permanently deleted within 30 days of confirmation.' },
 };
