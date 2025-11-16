@@ -33,7 +33,7 @@ const AboutPage: React.FC<PageProps> = ({ onLoginClick }) => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4 pb-2 border-b border-gray-600">Contact Us</h2>
             <p>
-                Have questions, feedback, or suggestions? We'd love to hear from you! Please reach out to our support team at <a href="mailto:support@aipostgen.example.com" className="text-brand-orange hover:underline">support@aipostgen.example.com</a>.
+                Have questions, feedback, or suggestions? We'd love to hear from you! Please reach out to our support team at <a href="mailto:salinilitou@gmail.com" className="text-brand-orange hover:underline">salinilitou@gmail.com</a>.
             </p>
         </LegalPageLayout>
     );

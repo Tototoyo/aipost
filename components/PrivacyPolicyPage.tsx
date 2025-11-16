@@ -51,7 +51,7 @@ const PrivacyPolicyPage: React.FC<PageProps> = ({ onLoginClick }) => {
             <h2 className="text-2xl font-semibold mt-8 mb-4 pb-2 border-b border-gray-600">6. {t('dataRightsTitle')}</h2>
             <p>
                 {t('dataRightsContent1')}
-                <a href="mailto:privacy@aipostgen.example.com" className="text-brand-orange hover:underline">privacy@aipostgen.example.com</a>.
+                <a href="mailto:salinilitou@gmail.com" className="text-brand-orange hover:underline">salinilitou@gmail.com</a>.
             </p>
             <p>
                 {t('dataRightsContent2')}
@@ -62,7 +62,7 @@ const PrivacyPolicyPage: React.FC<PageProps> = ({ onLoginClick }) => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4 pb-2 border-b border-gray-600">8. Contact Us</h2>
             <p>
-                If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:privacy@aipostgen.example.com" className="text-brand-orange hover:underline">privacy@aipostgen.example.com</a>.
+                If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:salinilitou@gmail.com" className="text-brand-orange hover:underline">salinilitou@gmail.com</a>.
             </p>
         </LegalPageLayout>
     );
