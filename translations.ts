@@ -1,3 +1,4 @@
+
 export const translations = {
   // Header
   appTitle: { ar: 'مولد المنشورات بالذكاء الاصطناعي', en: 'AI Post Generator' },
@@ -86,6 +87,7 @@ export const translations = {
   // Footer Links
   aboutLink: { ar: 'حول', en: 'About' },
   contactLink: { ar: 'اتصل بنا', en: 'Contact' },
+  communityLink: { ar: 'المعرض', en: 'Showcase' },
   privacyLink: { ar: 'سياسة الخصوصية', en: 'Privacy Policy' },
   termsLink: { ar: 'شروط الخدمة', en: 'Terms of Service' },
   
@@ -94,6 +96,7 @@ export const translations = {
   privacyPageTitle: { ar: 'سياسة الخصوصية', en: 'Privacy Policy'},
   termsPageTitle: { ar: 'شروط الخدمة', en: 'Terms of Service'},
   contactUsTitle: { ar: 'اتصل بنا', en: 'Contact Us' },
+  showcasePageTitle: { ar: 'معرض المجتمع', en: 'Community Showcase' },
   
   // Contact Page Content
   contactUsIntro: { ar: 'يسعدنا أن نسمع منك! سواء كان لديك سؤال حول الميزات، أو اقتراح للتحسين، أو تحتاج إلى دعم، فلا تتردد في التواصل معنا.', en: 'We\'d love to hear from you! Whether you have a question about features, a suggestion for improvement, or need support, please don\'t hesitate to reach out.' },
@@ -101,4 +104,10 @@ export const translations = {
   generalInquiriesText: { ar: 'للاستفسارات العامة، يرجى مراسلتنا على: ', en: 'For general inquiries, please email us at: ' },
   technicalSupportText: { ar: 'للحصول على الدعم الفني أو المساعدة، يرجى مراسلتنا على: ', en: 'For technical support or assistance, please email us at: ' },
   responseAimText: { ar: 'نهدف إلى الرد على جميع الاستفسارات في غضون 24-48 ساعة عمل.', en: 'We aim to respond to all inquiries within 24-48 business hours.' },
+
+  // Showcase Page
+  backToGenerator: { ar: 'العودة للمولد', en: 'Back to Generator'},
+  loadMore: { ar: 'تحميل المزيد', en: 'Load More' },
+  noMorePosts: { ar: 'لا يوجد المزيد من المنشورات لعرضها.', en: 'No more posts to show.' },
+  viewMoreLink: { ar: 'عرض المعرض الكامل', en: 'View Full Showcase' },
 };

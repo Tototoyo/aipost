@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import type { SocialMediaPost, ShowcasePost } from './types';
 import { generateSocialMediaPost, enhanceImage } from './services/geminiService';
@@ -23,6 +24,7 @@ import AboutPage from './components/AboutPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsOfServicePage from './components/TermsOfServicePage';
 import ContactPage from './components/ContactPage';
+import CommunityShowcasePage from './components/CommunityShowcasePage';
 
 
 const App: React.FC = () => {
@@ -90,6 +92,45 @@ const App: React.FC = () => {
         fetchPosts();
     }, []);
 
+    const sharePostToCommunity = useCallback(async (postToShare: SocialMediaPost) => {
+        if (!postToShare.imageUrl || !postToShare.captions || postToShare.captions.length === 0) {
+            return;
+        }
+
+        const bgColors = ['bg-slate-700', 'bg-sky-700', 'bg-emerald-700', 'bg-rose-700', 'bg-violet-700'];
+        const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
+        
+        const firstCaption = `${postToShare.captions[0]}\n\n${postToShare.hashtags}`;
+        
+        // Ensure caption object has both language keys, even if content is the same, for schema consistency.
+        const captionContent = { en: firstCaption, ar: firstCaption };
+
+        const newPostData = {
+            user_id: user?.id || null, // Allow anonymous posts
+            image_url: postToShare.imageUrl,
+            caption: captionContent,
+            bg_color: randomBg
+        };
+
+        const { data, error } = await supabase
+            .from('posts')
+            .insert(newPostData)
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error auto-sharing post:", error.message);
+        } else if (data) {
+             const newShowcasePost: ShowcasePost = {
+                id: data.id,
+                imageUrl: data.image_url,
+                caption: data.caption,
+                bgColor: data.bg_color,
+            };
+            setShowcasePosts(prevPosts => [newShowcasePost, ...prevPosts].slice(0, 9));
+        }
+    }, [user]);
+
     const handleGeneratePost = useCallback(async () => {
         if (!subject.trim()) {
             setError(t('subjectRequired'));
@@ -103,13 +144,17 @@ const App: React.FC = () => {
         try {
             const generatedPost = await generateSocialMediaPost(subject, tone, generationMode, imageStyle, brandInfo, template, language);
             setPost(generatedPost);
+
+            if (generatedPost.imageUrl) {
+                sharePostToCommunity(generatedPost);
+            }
         } catch (err) {
             console.error(err);
             setError(err instanceof Error ? err.message : t('unexpectedError'));
         } finally {
             setIsLoading(false);
         }
-    }, [subject, tone, generationMode, imageStyle, brandInfo, template, language, t]);
+    }, [subject, tone, generationMode, imageStyle, brandInfo, template, language, t, sharePostToCommunity]);
 
     const handleEnhanceImage = useCallback(async () => {
         if (!post?.imageUrl) return;
@@ -131,51 +176,6 @@ const App: React.FC = () => {
         }
     }, [post, language, t]);
 
-    const handleSharePost = useCallback(async () => {
-        if (!user) {
-            setIsAuthModalOpen(true);
-            return;
-        }
-
-        if (!post || !post.imageUrl || !post.captions || post.captions.length === 0) {
-            return;
-        }
-
-        const bgColors = ['bg-slate-700', 'bg-sky-700', 'bg-emerald-700', 'bg-rose-700', 'bg-violet-700'];
-        const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
-        
-        const firstCaption = `${post.captions[0]}\n\n${post.hashtags}`;
-
-        const newPostData = {
-            user_id: user.id,
-            image_url: post.imageUrl,
-            caption: {
-                ar: firstCaption,
-                en: firstCaption,
-            },
-            bg_color: randomBg
-        };
-
-        const { data, error } = await supabase
-            .from('posts')
-            .insert(newPostData)
-            .select()
-            .single();
-
-        if (error) {
-            console.error("Error sharing post:", error.message);
-            setError(t('unexpectedError'));
-        } else if (data) {
-             const newShowcasePost: ShowcasePost = {
-                id: data.id,
-                imageUrl: data.image_url,
-                caption: data.caption,
-                bgColor: data.bg_color,
-            };
-            setShowcasePosts(prevPosts => [newShowcasePost, ...prevPosts]);
-        }
-    }, [user, post, t]);
-
     const handleLoginClick = () => setIsAuthModalOpen(true);
 
     const renderPage = () => {
@@ -188,6 +188,8 @@ const App: React.FC = () => {
                 return <TermsOfServicePage onLoginClick={handleLoginClick} />;
             case '#/contact':
                 return <ContactPage onLoginClick={handleLoginClick} />;
+            case '#/showcase':
+                return <CommunityShowcasePage onLoginClick={handleLoginClick} />;
             default:
                 return (
                     <div className="min-h-screen bg-brand-dark text-brand-light font-sans flex flex-col">
@@ -270,7 +272,6 @@ const App: React.FC = () => {
                                                 isLoading={isLoading} 
                                                 captions={post?.captions ?? null} 
                                                 hashtags={post?.hashtags ?? null}
-                                                onShare={handleSharePost} 
                                             />
                                         </div>
                                         {post && <AICommentReplyGenerator post={post} />}

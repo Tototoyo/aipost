@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TwitterIcon, InstagramIcon, FacebookIcon } from './icons';
 import { useI18n } from '../contexts/I18nContext';
@@ -19,6 +20,7 @@ const Footer: React.FC = () => {
                     </p>
                     <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 order-2">
                         <a href="/#/about" className="text-sm text-gray-300 hover:text-brand-orange transition-colors">{t('aboutLink')}</a>
+                        <a href="/#/showcase" className="text-sm text-gray-300 hover:text-brand-orange transition-colors">{t('communityLink')}</a>
                         <a href="/#/contact" className="text-sm text-gray-300 hover:text-brand-orange transition-colors">{t('contactLink')}</a>
                         <a href="/#/privacy" className="text-sm text-gray-300 hover:text-brand-orange transition-colors">{t('privacyLink')}</a>
                         <a href="/#/terms" className="text-sm text-gray-300 hover:text-brand-orange transition-colors">{t('termsLink')}</a>

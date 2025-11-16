@@ -1,20 +1,18 @@
+
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { CopyIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PlusCircleIcon } from './icons';
+import { CopyIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useI18n } from '../contexts/I18nContext';
-import { useAuth } from '../contexts/AuthContext';
 
 interface PostContentProps {
     isLoading: boolean;
     captions: string[] | null;
     hashtags: string | null;
-    onShare: () => void;
 }
 
-const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags, onShare }) => {
+const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags }) => {
     const { t, language } = useI18n();
-    const { user } = useAuth();
     const [isCopied, setIsCopied] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -77,14 +75,6 @@ const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags
                             >
                                 {isCopied ? <CheckIcon /> : <CopyIcon />}
                                 {isCopied ? t('copied') : t('copy')}
-                            </button>
-                             <button 
-                                onClick={onShare}
-                                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors duration-200 bg-gray-700 hover:bg-gray-600 text-brand-light disabled:opacity-50"
-                                disabled={!fullText}
-                            >
-                                <PlusCircleIcon />
-                                {user ? t('addToShowcase') : t('loginToShare')}
                             </button>
                          </div>
                     </div>
