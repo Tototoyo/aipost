@@ -19,6 +19,9 @@ import SubjectInput from './components/SubjectInput';
 import AuthModal from './components/AuthModal';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './supabaseClient';
+import AboutPage from './components/AboutPage';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsOfServicePage from './components/TermsOfServicePage';
 
 
 const App: React.FC = () => {
@@ -41,6 +44,21 @@ const App: React.FC = () => {
     // Auth and Community state
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [showcasePosts, setShowcasePosts] = useState<ShowcasePost[]>([]);
+
+    // Routing state
+    const [route, setRoute] = useState(window.location.hash || '#/');
+
+    useEffect(() => {
+        const handleHashChange = () => {
+            setRoute(window.location.hash || '#/');
+        };
+
+        window.addEventListener('hashchange', handleHashChange);
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, []);
+
 
     useEffect(() => {
         document.documentElement.lang = language;
@@ -157,110 +175,127 @@ const App: React.FC = () => {
         }
     }, [user, post, t]);
 
+    const handleLoginClick = () => setIsAuthModalOpen(true);
+
+    const renderPage = () => {
+        switch (route) {
+            case '#/about':
+                return <AboutPage onLoginClick={handleLoginClick} />;
+            case '#/privacy':
+                return <PrivacyPolicyPage onLoginClick={handleLoginClick} />;
+            case '#/terms':
+                return <TermsOfServicePage onLoginClick={handleLoginClick} />;
+            default:
+                return (
+                    <div className="min-h-screen bg-brand-dark text-brand-light font-sans flex flex-col">
+                        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex-grow">
+                            <Header onLoginClick={handleLoginClick} />
+                            <main className="mt-8">
+                                <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    {/* Control Panel */}
+                                    <div className="md:col-span-1 space-y-6">
+                                        <SubjectInput subject={subject} onSubjectChange={setSubject} />
+                                        
+                                        <div className="bg-brand-medium p-4 rounded-xl shadow-lg space-y-4 border border-gray-700">
+                                            <h3 className="text-lg font-semibold text-center text-gray-200">
+                                                {t('brandCustomizationTitle')}
+                                            </h3>
+                                            <BrandInfoInput brandInfo={brandInfo} onBrandInfoChange={setBrandInfo} />
+                                            <TemplateSelector selectedTemplate={template} onTemplateChange={setTemplate} />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-center text-sm font-medium text-gray-400 mb-2">
+                                                {t('generationModeLabel')}
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-2 rounded-lg bg-brand-medium p-1">
+                                                <button
+                                                    key="full"
+                                                    onClick={() => setGenerationMode('full')}
+                                                    className={`
+                                                        flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
+                                                        ${generationMode === 'full'
+                                                            ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
+                                                            : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
+                                                        }
+                                                    `}
+                                                    aria-pressed={generationMode === 'full'}
+                                                >
+                                                    <PhotoIcon />
+                                                    <span>{t('textAndImage')}</span>
+                                                </button>
+                                                <button
+                                                    key="textOnly"
+                                                    onClick={() => setGenerationMode('textOnly')}
+                                                    className={`
+                                                        flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
+                                                        ${generationMode === 'textOnly'
+                                                            ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
+                                                            : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
+                                                        }
+                                                    `}
+                                                    aria-pressed={generationMode === 'textOnly'}
+                                                >
+                                                    <DocumentTextIcon />
+                                                    <span>{t('textOnly')}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <ImageStyleSelector selectedStyle={imageStyle} onStyleChange={setImageStyle} />
+                                        <ToneSelector selectedTone={tone} onToneChange={setTone} />
+                                        <GenerateButton isLoading={isLoading} onClick={handleGeneratePost} disabled={!subject.trim()} />
+                                    </div>
+
+                                    {/* Results Area */}
+                                    <div className="md:col-span-2 space-y-8">
+                                        {error && (
+                                            <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg relative flex items-center gap-3">
+                                            <ErrorIcon />
+                                                <span className="block sm:inline">{error}</span>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                                            <ImageDisplay 
+                                                isLoading={isLoading} 
+                                                imageUrl={post?.imageUrl ?? null}
+                                                isEnhancing={isEnhancing}
+                                                isEnhanced={isEnhanced}
+                                                onEnhance={handleEnhanceImage} 
+                                            />
+                                            <PostContent 
+                                                isLoading={isLoading} 
+                                                captions={post?.captions ?? null} 
+                                                hashtags={post?.hashtags ?? null}
+                                                onShare={handleSharePost} 
+                                            />
+                                        </div>
+                                        {post && <AICommentReplyGenerator post={post} />}
+                                    </div>
+                                </div>
+                                
+                                {/* Community & Engagement Section */}
+                                <div id="community" className="mt-12 border-t border-gray-700 pt-8">
+                                    <h2 className="text-3xl font-bold text-center mb-8">
+                                        <span className="text-brand-light">{t('communitySectionTitle')}</span>
+                                    </h2>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <PostIdeaGenerator />
+                                        <CommunityShowcase posts={showcasePosts} />
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                        <Footer />
+                    </div>
+                );
+        }
+    }
+
 
     return (
         <>
-            <div className="min-h-screen bg-brand-dark text-brand-light font-sans flex flex-col">
-                <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex-grow">
-                    <Header onLoginClick={() => setIsAuthModalOpen(true)} />
-                    <main className="mt-8">
-                        <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {/* Control Panel */}
-                            <div className="md:col-span-1 space-y-6">
-                                <SubjectInput subject={subject} onSubjectChange={setSubject} />
-                                
-                                <div className="bg-brand-medium p-4 rounded-xl shadow-lg space-y-4 border border-gray-700">
-                                    <h3 className="text-lg font-semibold text-center text-gray-200">
-                                        {t('brandCustomizationTitle')}
-                                    </h3>
-                                    <BrandInfoInput brandInfo={brandInfo} onBrandInfoChange={setBrandInfo} />
-                                    <TemplateSelector selectedTemplate={template} onTemplateChange={setTemplate} />
-                                </div>
-
-                                <div>
-                                    <label className="block text-center text-sm font-medium text-gray-400 mb-2">
-                                        {t('generationModeLabel')}
-                                    </label>
-                                    <div className="grid grid-cols-2 gap-2 rounded-lg bg-brand-medium p-1">
-                                        <button
-                                            key="full"
-                                            onClick={() => setGenerationMode('full')}
-                                            className={`
-                                                flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
-                                                ${generationMode === 'full'
-                                                    ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
-                                                    : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
-                                                }
-                                            `}
-                                            aria-pressed={generationMode === 'full'}
-                                        >
-                                            <PhotoIcon />
-                                            <span>{t('textAndImage')}</span>
-                                        </button>
-                                        <button
-                                            key="textOnly"
-                                            onClick={() => setGenerationMode('textOnly')}
-                                            className={`
-                                                flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
-                                                ${generationMode === 'textOnly'
-                                                    ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
-                                                    : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
-                                                }
-                                            `}
-                                            aria-pressed={generationMode === 'textOnly'}
-                                        >
-                                            <DocumentTextIcon />
-                                            <span>{t('textOnly')}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <ImageStyleSelector selectedStyle={imageStyle} onStyleChange={setImageStyle} />
-                                <ToneSelector selectedTone={tone} onToneChange={setTone} />
-                                <GenerateButton isLoading={isLoading} onClick={handleGeneratePost} disabled={!subject.trim()} />
-                            </div>
-
-                            {/* Results Area */}
-                            <div className="md:col-span-2 space-y-8">
-                                {error && (
-                                    <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg relative flex items-center gap-3">
-                                    <ErrorIcon />
-                                        <span className="block sm:inline">{error}</span>
-                                    </div>
-                                )}
-                                
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                                    <ImageDisplay 
-                                        isLoading={isLoading} 
-                                        imageUrl={post?.imageUrl ?? null}
-                                        isEnhancing={isEnhancing}
-                                        isEnhanced={isEnhanced}
-                                        onEnhance={handleEnhanceImage} 
-                                    />
-                                    <PostContent 
-                                        isLoading={isLoading} 
-                                        captions={post?.captions ?? null} 
-                                        hashtags={post?.hashtags ?? null}
-                                        onShare={handleSharePost} 
-                                    />
-                                </div>
-                                {post && <AICommentReplyGenerator post={post} />}
-                            </div>
-                        </div>
-                        
-                        {/* Community & Engagement Section */}
-                        <div id="community" className="mt-12 border-t border-gray-700 pt-8">
-                            <h2 className="text-3xl font-bold text-center mb-8">
-                                <span className="text-brand-light">{t('communitySectionTitle')}</span>
-                            </h2>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <PostIdeaGenerator />
-                                <CommunityShowcase posts={showcasePosts} />
-                            </div>
-                        </div>
-                    </main>
-                </div>
-                <Footer />
-            </div>
+            {renderPage()}
             <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
         </>
     );
