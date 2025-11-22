@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BookOpenIcon, LightbulbIcon, MegaphoneIcon } from './icons';
 import { useI18n } from '../contexts/I18nContext';
@@ -17,26 +18,28 @@ const ToneSelector: React.FC<ToneSelectorProps> = ({ selectedTone, onToneChange 
     const { t } = useI18n();
 
     return (
-        <div>
-            <label className="block text-center text-sm font-medium text-gray-400 mb-2">
+        <div className="w-full">
+            <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-3 ml-1">
                 {t('postToneLabel')}
             </label>
-            <div className="grid grid-cols-3 gap-2 rounded-lg bg-brand-medium p-1">
+            <div className="grid grid-cols-3 gap-3">
                 {TONES.map(({ name, key, icon }) => (
                     <button
                         key={name}
                         onClick={() => onToneChange(name)}
                         className={`
-                            flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
+                            flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-200 border
                             ${selectedTone === name
-                                ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
-                                : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
+                                ? 'bg-primary/10 text-primary border-primary'
+                                : 'bg-surfaceHighlight text-text-muted border-transparent hover:bg-surfaceHighlight/80'
                             }
                         `}
                         aria-pressed={selectedTone === name}
                     >
-                        {icon}
-                        <span className="hidden sm:inline">{t(key)}</span>
+                         <div className={selectedTone === name ? 'text-primary' : 'text-gray-500'}>
+                             {icon}
+                        </div>
+                        <span className="text-xs font-medium">{t(key)}</span>
                     </button>
                 ))}
             </div>

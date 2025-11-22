@@ -1,18 +1,15 @@
-import OpenAI from 'openai';
+
+import { GoogleGenAI, Type } from "@google/genai";
 import type { SocialMediaPost } from "../types";
 import type { Language } from "../contexts/I18nContext";
 
-// In accordance with OpenAI API guidelines, initialize the client.
-// Assumes API_KEY is available in the execution environment as `import.meta.env.VITE_OPENAI_API_KEY`.
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true, // This is required for client-side usage.
-});
+// Initialize the client with the API key from process.env.API_KEY
+// The API key must be obtained exclusively from the environment variable process.env.API_KEY.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const textModel = 'gpt-4o';
-const imageGenerationModel = 'dall-e-3';
-const visionModel = 'gpt-4o';
-const fastTextModel = 'gpt-4o-mini';
+const textModel = 'gemini-3-pro-preview';
+const imageModel = 'gemini-3-pro-image-preview';
+const fastTextModel = 'gemini-2.5-flash';
 
 export const generateSocialMediaPost = async (
     subject: string,
@@ -113,7 +110,6 @@ export const generateSocialMediaPost = async (
     }
 
     try {
-        const systemPrompt = `You are an expert social media marketer and art director. Your response must be a valid JSON object matching this schema: {"captions": ["string", "string", "string"], "hashtags": "string", "imagePrompt": "string"}. The 'imagePrompt' must be in English and must strictly forbid any text from appearing in the image.`;
         const userPrompt = `
 Create a social media post about: "${subject}".
 
@@ -131,21 +127,28 @@ ${brandInfo.trim() ? `
 -   **Aesthetics:** ${imageStyleInstruction}
 -   The subject should be a beautiful representation of the caption's content.
 `;
-        const response = await openai.chat.completions.create({
+        const response = await ai.models.generateContent({
             model: textModel,
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-            ],
-            response_format: { type: 'json_object' },
+            contents: userPrompt,
+            config: {
+                systemInstruction: "You are an expert social media marketer and art director.",
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        captions: {
+                            type: Type.ARRAY,
+                            items: { type: Type.STRING }
+                        },
+                        hashtags: { type: Type.STRING },
+                        imagePrompt: { type: Type.STRING }
+                    },
+                    required: ["captions", "hashtags", "imagePrompt"]
+                },
+            },
         });
 
-        const content = response.choices[0].message.content;
-        if (!content) {
-            throw new Error(isArabic ? "كانت استجابة الواجهة البرمجية فارغة أو غير صالحة." : "The API response was empty or invalid.");
-        }
-
-        const generatedTextContent = JSON.parse(content);
+        const generatedTextContent = JSON.parse(response.text || "{}");
         const { captions, hashtags, imagePrompt } = generatedTextContent as { captions: string[], hashtags: string, imagePrompt: string };
         
         if (!captions || captions.length === 0 || !hashtags || !imagePrompt) {
@@ -156,26 +159,38 @@ ${brandInfo.trim() ? `
             return { imageUrl: null, captions, hashtags };
         }
 
-        const imageResponse = await openai.images.generate({
-            model: imageGenerationModel,
-            prompt: imagePrompt,
-            n: 1,
-            size: "1024x1024",
-            response_format: 'b64_json',
+        const imageResponse = await ai.models.generateContent({
+            model: imageModel,
+            contents: { parts: [{ text: imagePrompt }] },
+            config: {
+                imageConfig: {
+                    aspectRatio: "1:1",
+                    imageSize: "1K"
+                }
+            },
         });
 
-        const b64Json = imageResponse.data[0]?.b64_json;
-        if (!b64Json) {
+        let imageUrl: string | null = null;
+        const candidate = imageResponse.candidates?.[0];
+        if (candidate?.content?.parts) {
+            for (const part of candidate.content.parts) {
+                if (part.inlineData) {
+                    imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                    break;
+                }
+            }
+        }
+
+        if (!imageUrl) {
             throw new Error(isArabic ? "فشل إنشاء الصورة." : "Image generation failed.");
         }
-        
-        const imageUrl = `data:image/jpeg;base64,${b64Json}`;
 
         return { imageUrl, captions, hashtags };
 
     } catch (error) {
         console.error("Error in generateSocialMediaPost:", error);
         if (error instanceof Error) {
+             // Basic check for JSON parsing errors or others
             if (error.message.includes("JSON")) {
                 throw new Error(isArabic ? "أرجع نموذج الذكاء الاصطناعي تنسيقًا غير صالح." : "The AI model returned an invalid format.");
             }
@@ -188,43 +203,77 @@ ${brandInfo.trim() ? `
 export const enhanceImage = async (imageUrl: string, language: Language): Promise<string> => {
     const isArabic = language === 'ar';
     try {
-        const visionResponse = await openai.chat.completions.create({
-            model: visionModel,
-            messages: [
-                {
-                    role: "user",
-                    content: [
-                        { type: "text", text: 'Analyze this image and write a new, highly detailed image generation prompt for a generative AI model to regenerate it with enhanced sharpness, clarity, and photorealistic quality. Do not change the core subject or composition. Return ONLY the new prompt in English.' },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                url: imageUrl,
-                            },
-                        },
-                    ],
-                },
-            ],
+        // Check if imageUrl is a data URL and extract base64
+        let base64Data = '';
+        let mimeType = '';
+        if (imageUrl.startsWith('data:')) {
+            const parts = imageUrl.split(',');
+            if (parts.length === 2) {
+                base64Data = parts[1];
+                const mimeMatch = parts[0].match(/:(.*?);/);
+                if (mimeMatch) {
+                    mimeType = mimeMatch[1];
+                }
+            }
+        }
+
+        if (!base64Data || !mimeType) {
+             // If it's not a data URL, we can't handle it easily with Gemini inlineData without fetching it first.
+             // Assuming app generates data URLs.
+             throw new Error("Invalid image format for enhancement.");
+        }
+
+        // Step 1: Analyze image to get a better prompt
+        const visionResponse = await ai.models.generateContent({
+            model: fastTextModel,
+            contents: {
+                parts: [
+                    {
+                        inlineData: {
+                            mimeType: mimeType,
+                            data: base64Data
+                        }
+                    },
+                    {
+                        text: 'Analyze this image and write a new, highly detailed image generation prompt for a generative AI model to regenerate it with enhanced sharpness, clarity, and photorealistic quality. Do not change the core subject or composition. Return ONLY the new prompt in English.'
+                    }
+                ]
+            }
         });
         
-        const newPrompt = visionResponse.choices[0].message.content;
+        const newPrompt = visionResponse.text;
         if (!newPrompt) {
             throw new Error(isArabic ? "فشل في تحليل الصورة للتحسين." : "Failed to analyze image for enhancement.");
         }
 
-        const imageResponse = await openai.images.generate({
-            model: imageGenerationModel,
-            prompt: newPrompt,
-            n: 1,
-            size: "1024x1024",
-            response_format: 'b64_json',
+        // Step 2: Generate new image
+        const imageResponse = await ai.models.generateContent({
+            model: imageModel,
+            contents: { parts: [{ text: newPrompt }] },
+            config: {
+                 imageConfig: {
+                    aspectRatio: "1:1",
+                    imageSize: "1K"
+                }
+            },
         });
 
-        const b64Json = imageResponse.data[0]?.b64_json;
-        if (!b64Json) {
+        let enhancedImageUrl: string | null = null;
+         const candidate = imageResponse.candidates?.[0];
+        if (candidate?.content?.parts) {
+            for (const part of candidate.content.parts) {
+                if (part.inlineData) {
+                    enhancedImageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                    break;
+                }
+            }
+        }
+
+        if (!enhancedImageUrl) {
             throw new Error(isArabic ? "فشل تحسين الصورة." : "Image enhancement failed.");
         }
 
-        return `data:image/jpeg;base64,${b64Json}`;
+        return enhancedImageUrl;
 
     } catch (error) {
         console.error("Error in enhanceImage:", error);
@@ -243,12 +292,12 @@ export const generatePostIdea = async (language: Language): Promise<string> => {
             ? "أنت خبير استراتيجي إبداعي. قدم فكرة واحدة جديدة وجذابة لمنشور على وسائل التواصل الاجتماعي لليوم. يجب أن تكون الفكرة عبارة عن موجه قصير وملهم يمكن للمستخدم البناء عليه. ركز على مواضيع عامة مثل اتجاهات التصميم، أو قصص النجاح، أو نظرة من خلف الكواليس. يجب أن يكون الناتج نصًا واحدًا باللغة العربية."
             : "You are a creative strategist. Provide one fresh and engaging social media post idea for today. The idea should be a short, inspirational prompt a user can build on. Focus on general themes like design trends, success stories, or a behind-the-scenes look. The output must be a single string in English.";
 
-        const response = await openai.chat.completions.create({
+        const response = await ai.models.generateContent({
             model: fastTextModel,
-            messages: [{ role: 'user', content: prompt }],
+            contents: prompt,
         });
 
-        const idea = response.choices[0].message.content;
+        const idea = response.text;
         if (!idea) {
             throw new Error(isArabic ? "فشلت في إنشاء فكرة." : "Failed to generate an idea.");
         }
@@ -265,19 +314,28 @@ export const generatePostIdea = async (language: Language): Promise<string> => {
 export const generateReplies = async (postCaption: string, language: Language): Promise<string[]> => {
     const isArabic = language === 'ar';
     try {
-        const systemPrompt = `You are a friendly social media manager. Your response must be a valid JSON object matching this schema: {"replies": ["string", "string", "string"]}. Your replies must be in ${isArabic ? 'Arabic' : 'English'}.`;
         const userPrompt = `Based on this post text, generate 3 distinct and engaging replies for positive comments: "${postCaption}".`;
         
-        const response = await openai.chat.completions.create({
+        const response = await ai.models.generateContent({
             model: fastTextModel,
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-            ],
-            response_format: { type: 'json_object' },
+            contents: userPrompt,
+            config: {
+                systemInstruction: `You are a friendly social media manager. Your replies must be in ${isArabic ? 'Arabic' : 'English'}.`,
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        replies: {
+                            type: Type.ARRAY,
+                            items: { type: Type.STRING }
+                        }
+                    },
+                    required: ["replies"]
+                }
+            }
         });
 
-        const content = response.choices[0].message.content;
+        const content = response.text;
         if (!content) {
             throw new Error(isArabic ? "فشلت في إنشاء الردود." : "Failed to generate replies.");
         }

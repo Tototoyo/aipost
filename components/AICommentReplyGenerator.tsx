@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { generateReplies } from '../services/geminiService';
 import type { SocialMediaPost } from '../types';
@@ -41,35 +42,50 @@ const AICommentReplyGenerator: React.FC<AICommentReplyGeneratorProps> = ({ post 
 
 
     return (
-        <div className="bg-brand-medium p-6 rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold text-center mb-2 text-brand-light flex items-center justify-center gap-2">
-                <ChatBubbleLeftRightIcon />
-                <span>{t('commentReplyGeneratorTitle')}</span>
-            </h3>
-            <p className="text-sm text-gray-400 text-center mb-4">
-                {t('commentReplyGeneratorDescription')}
-            </p>
-            
+        <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-secondary/10 rounded-lg text-secondary">
+                         <ChatBubbleLeftRightIcon />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-white">{t('commentReplyGeneratorTitle')}</h3>
+                        <p className="text-xs text-text-muted">{t('commentReplyGeneratorDescription')}</p>
+                    </div>
+                </div>
+                <button
+                    onClick={handleGenerateReplies}
+                    disabled={isLoading}
+                    className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded-xl shadow-md transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                    {isLoading ? (
+                        <span className="flex items-center gap-2"><SpinnerIcon /> {t('generating')}</span>
+                    ) : (
+                        t('generate3Replies')
+                    )}
+                </button>
+            </div>
+
             {isLoading && (
-                <div className="flex justify-center items-center h-24">
+                <div className="flex justify-center items-center py-8 text-primary">
                     <SpinnerIcon />
                 </div>
             )}
 
             {!isLoading && error && (
-                <div className="bg-red-900/50 text-red-300 p-3 rounded-lg text-center my-4 text-sm flex items-center justify-center gap-2">
+                <div className="bg-red-500/10 text-red-400 p-4 rounded-xl my-4 text-sm flex items-center gap-3">
                     <ErrorIcon /> {error}
                 </div>
             )}
 
             {!isLoading && replies && (
-                <div className="space-y-3 my-4">
+                <div className="grid gap-3 animate-fade-in">
                     {replies.map((reply, index) => (
-                         <div key={index} className="bg-brand-dark p-3 rounded-lg flex justify-between items-center gap-2">
-                            <p className="text-gray-300 text-sm flex-grow">{reply}</p>
+                         <div key={index} className="group bg-surfaceHighlight border border-border p-4 rounded-xl flex justify-between items-start gap-4 hover:border-primary/50 transition-colors">
+                            <p className="text-gray-200 text-sm leading-relaxed pt-1">{reply}</p>
                             <button
                                 onClick={() => handleCopy(reply, index)}
-                                className="p-2 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors flex-shrink-0"
+                                className={`p-2 rounded-lg transition-colors flex-shrink-0 ${copiedIndex === index ? 'text-green-400 bg-green-500/10' : 'text-text-muted hover:text-white hover:bg-surface'}`}
                                 aria-label="Copy reply"
                             >
                                 {copiedIndex === index ? <CheckIcon /> : <CopyIcon />}
@@ -78,21 +94,6 @@ const AICommentReplyGenerator: React.FC<AICommentReplyGeneratorProps> = ({ post 
                     ))}
                 </div>
             )}
-
-            <button
-                onClick={handleGenerateReplies}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-md font-bold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
-            >
-                {isLoading ? (
-                    <>
-                        <SpinnerIcon />
-                        {t('generating')}
-                    </>
-                ) : (
-                    t('generate3Replies')
-                )}
-            </button>
         </div>
     );
 };
