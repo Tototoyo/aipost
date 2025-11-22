@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import type { SocialMediaPost, ShowcasePost, Reminder } from './types';
+import type { SocialMediaPost, ShowcasePost } from './types';
 import { generateSocialMediaPost, enhanceImage } from './services/geminiService';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -9,7 +9,7 @@ import ImageDisplay from './components/ImageDisplay';
 import PostContent from './components/PostContent';
 import ToneSelector from './components/ToneSelector';
 import ImageStyleSelector from './components/ImageStyleSelector';
-import { ErrorIcon, PhotoIcon, DocumentTextIcon, BellIcon, XMarkIcon } from './components/icons';
+import { ErrorIcon, PhotoIcon, DocumentTextIcon } from './components/icons';
 import BrandInfoInput from './components/BrandInfoInput';
 import TemplateSelector from './components/TemplateSelector';
 import PostIdeaGenerator from './components/PostIdeaGenerator';
@@ -18,8 +18,6 @@ import CommunityShowcase from './components/CommunityShowcase';
 import { useI18n } from './contexts/I18nContext';
 import SubjectInput from './components/SubjectInput';
 import AuthModal from './components/AuthModal';
-import ScheduleModal from './components/ScheduleModal';
-import ViralHookGenerator from './components/ViralHookGenerator';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './supabaseClient';
 import AboutPage from './components/AboutPage';
@@ -52,14 +50,6 @@ const App: React.FC = () => {
 
     // Routing state
     const [route, setRoute] = useState(window.location.hash || '#/');
-
-    // Reminder State
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-    const [reminders, setReminders] = useState<Reminder[]>(() => {
-        const saved = localStorage.getItem('post_reminders');
-        return saved ? JSON.parse(saved) : [];
-    });
-    const [activeReminder, setActiveReminder] = useState<Reminder | null>(null);
 
     useEffect(() => {
         const handleHashChange = () => {
@@ -101,44 +91,6 @@ const App: React.FC = () => {
 
         fetchPosts();
     }, []);
-
-    // Reminder logic
-    useEffect(() => {
-        localStorage.setItem('post_reminders', JSON.stringify(reminders));
-    }, [reminders]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const now = new Date();
-            const dueReminders = reminders.filter(r => new Date(r.scheduledTime) <= now);
-            
-            if (dueReminders.length > 0) {
-                // Trigger notification for the first one
-                setActiveReminder(dueReminders[0]);
-                // Remove from list so it doesn't trigger again
-                setReminders(prev => prev.filter(r => r.id !== dueReminders[0].id));
-            }
-        }, 10000); // Check every 10 seconds
-
-        return () => clearInterval(interval);
-    }, [reminders]);
-
-    const handleSchedule = (dateString: string) => {
-        if (!post) return;
-        const newReminder: Reminder = {
-            id: Date.now().toString(),
-            subject: subject || 'Social Media Post',
-            scheduledTime: dateString,
-            contentSnippet: post.captions[0]?.substring(0, 50) + '...'
-        };
-        setReminders(prev => [...prev, newReminder]);
-        // We could add a "Reminder Set" toast here, but let's keep it simple
-    };
-
-    const closeNotification = () => {
-        setActiveReminder(null);
-    };
-
 
     const sharePostToCommunity = useCallback(async (postToShare: SocialMediaPost) => {
         if (!postToShare.imageUrl || !postToShare.captions || postToShare.captions.length === 0) {
@@ -320,11 +272,9 @@ const App: React.FC = () => {
                                                 isLoading={isLoading} 
                                                 captions={post?.captions ?? null} 
                                                 hashtags={post?.hashtags ?? null}
-                                                onOpenSchedule={() => setIsScheduleModalOpen(true)}
                                             />
                                         </div>
                                         {post && <AICommentReplyGenerator post={post} />}
-                                        <ViralHookGenerator subject={subject} />
                                     </div>
                                 </div>
                                 
@@ -351,39 +301,6 @@ const App: React.FC = () => {
         <>
             {renderPage()}
             <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
-            <ScheduleModal 
-                isOpen={isScheduleModalOpen} 
-                onClose={() => setIsScheduleModalOpen(false)} 
-                onSchedule={handleSchedule} 
-            />
-            
-            {/* In-App Notification Toast */}
-            {activeReminder && (
-                <div className="fixed top-4 right-4 z-50 max-w-sm w-full bg-brand-medium border border-brand-orange rounded-xl shadow-2xl p-4 animate-slide-in-right">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3">
-                            <div className="bg-brand-orange/20 p-2 rounded-full text-brand-orange shrink-0">
-                                <BellIcon />
-                            </div>
-                            <div>
-                                <h4 className="text-brand-light font-bold">{t('reminderTitle')}</h4>
-                                <p className="text-gray-300 text-sm mt-1">
-                                    {t('timeFor')} 
-                                    <span className="font-medium text-white">"{activeReminder.subject}"</span>
-                                </p>
-                                {user?.email && (
-                                    <p className="text-xs text-gray-500 mt-2 italic">
-                                        {t('simulatedEmailSent')} {user.email}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        <button onClick={closeNotification} className="text-gray-400 hover:text-white">
-                            <XMarkIcon />
-                        </button>
-                    </div>
-                </div>
-            )}
         </>
     );
 };

@@ -1,4 +1,3 @@
-
 export interface SocialMediaPost {
     imageUrl: string | null;
     captions: string[];
@@ -18,19 +17,4 @@ export interface ShowcasePost {
 export interface User {
     id: string;
     email: string;
-}
-
-export interface Reminder {
-    id: string;
-    subject: string;
-    scheduledTime: string;
-    contentSnippet?: string;
-}
-
-export interface ViralHooks {
-    curiosity: string[];
-    controversial: string[];
-    story: string[];
-    emotional: string[];
-    short: string[];
 }

@@ -2,17 +2,16 @@
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { CopyIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, BellIcon } from './icons';
+import { CopyIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useI18n } from '../contexts/I18nContext';
 
 interface PostContentProps {
     isLoading: boolean;
     captions: string[] | null;
     hashtags: string | null;
-    onOpenSchedule?: () => void;
 }
 
-const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags, onOpenSchedule }) => {
+const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags }) => {
     const { t, language } = useI18n();
     const [isCopied, setIsCopied] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -69,16 +68,6 @@ const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags
                     <div className="flex justify-between items-start mb-4 gap-2">
                          <h2 className="text-2xl font-bold text-brand-light">{t('postSuggestions')}</h2>
                          <div className="flex gap-2 flex-shrink-0">
-                             {onOpenSchedule && (
-                                <button
-                                    onClick={onOpenSchedule}
-                                    className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors duration-200 bg-gray-700 hover:bg-gray-600 text-brand-light hover:text-brand-orange border border-transparent hover:border-brand-orange/50"
-                                    title={t('scheduleReminder')}
-                                >
-                                    <BellIcon />
-                                    <span className="hidden sm:inline">{t('scheduleReminder')}</span>
-                                </button>
-                             )}
                             <button 
                                 onClick={() => handleCopy(fullText)}
                                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors duration-200 bg-gray-700 hover:bg-gray-600 text-brand-light disabled:opacity-50"

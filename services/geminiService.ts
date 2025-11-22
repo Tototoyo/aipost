@@ -1,6 +1,5 @@
-
 import OpenAI from 'openai';
-import type { SocialMediaPost, ViralHooks } from "../types";
+import type { SocialMediaPost } from "../types";
 import type { Language } from "../contexts/I18nContext";
 
 // In accordance with OpenAI API guidelines, initialize the client.
@@ -300,45 +299,3 @@ export const generateReplies = async (postCaption: string, language: Language): 
         throw new Error(isArabic ? "حدث خطأ غير معروف أثناء إنشاء الردود." : "An unknown error occurred while generating replies.");
     }
 };
-
-export const generateViralHooks = async (subject: string, language: Language): Promise<ViralHooks> => {
-    const isArabic = language === 'ar';
-    try {
-        const systemPrompt = `You are a viral content expert. Your task is to generate 3 distinct hooks for each of the following categories based on a subject. You must return a valid JSON object matching this schema: {"curiosity": ["string", "string", "string"], "controversial": ["string", "string", "string"], "story": ["string", "string", "string"], "emotional": ["string", "string", "string"], "short": ["string", "string", "string"]}. All hooks must be in ${isArabic ? 'Arabic' : 'English'}.`;
-        
-        const userPrompt = `Subject: "${subject}".
-        
-        Categories:
-        1. Curiosity (makes them wonder)
-        2. Controversial (challenges a belief)
-        3. Story (starts a narrative)
-        4. Emotional (triggers feeling)
-        5. Short (punchy, under 10 words)
-
-        Return 3 distinct hooks for each category.`;
-
-        const response = await openai.chat.completions.create({
-            model: fastTextModel,
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-            ],
-            response_format: { type: 'json_object' },
-        });
-
-        const content = response.choices[0].message.content;
-        if (!content) {
-             throw new Error(isArabic ? "كانت استجابة الواجهة البرمجية فارغة." : "The API response was empty.");
-        }
-
-        const parsedResponse = JSON.parse(content);
-        return parsedResponse as ViralHooks;
-
-    } catch (error) {
-        console.error("Error generating viral hooks:", error);
-         if (error instanceof Error) {
-            throw new Error(`${isArabic ? 'فشل في إنشاء العناوين' : 'Failed to generate hooks'}: ${error.message}`);
-        }
-        throw new Error(isArabic ? "حدث خطأ غير معروف." : "An unknown error occurred.");
-    }
-}

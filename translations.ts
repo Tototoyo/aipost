@@ -45,27 +45,6 @@ export const translations = {
   postContentTitle: { ar: 'محتوى المنشور', en: 'Post Content' },
   postContentPlaceholder: { ar: 'سيظهر هنا النص والهاشتاجات التي تم إنشاؤها.', en: 'Your generated text and hashtags will appear here.' },
   
-  // Schedule Reminder
-  scheduleReminder: { ar: 'جدولة تذكير', en: 'Schedule Reminder' },
-  pickDateTime: { ar: 'اختر التاريخ والوقت', en: 'Pick Date & Time' },
-  setReminder: { ar: 'تعيين التذكير', en: 'Set Reminder' },
-  reminderSet: { ar: 'تم تعيين التذكير!', en: 'Reminder Set!' },
-  reminderTitle: { ar: 'تذكير بالنشر', en: 'Post Reminder' },
-  timeFor: { ar: 'حان الوقت لنشر: ', en: 'It\'s time to post: ' },
-  cancel: { ar: 'إلغاء', en: 'Cancel' },
-  simulatedEmailSent: { ar: 'تم إرسال البريد الإلكتروني (محاكاة) إلى', en: 'Email sent (simulated) to' },
-
-  // Viral Hooks
-  viralHooksTitle: { ar: 'مولد العناوين الفيروسية', en: 'Viral Hook Generator' },
-  viralHooksDescription: { ar: 'احصل على عناوين جذابة تجبر الجمهور على التوقف والقراءة.', en: 'Get catchy hooks that stop the scroll and grab attention.' },
-  giveMeHooks: { ar: 'أعطني عناوين جذابة', en: 'Give me hooks' },
-  generatingHooks: { ar: 'جاري إنشاء العناوين...', en: 'Generating hooks...' },
-  curiosityHooks: { ar: 'فضول', en: 'Curiosity' },
-  controversialHooks: { ar: 'جدلي', en: 'Controversial' },
-  storyHooks: { ar: 'قصصي', en: 'Story' },
-  emotionalHooks: { ar: 'عاطفي', en: 'Emotional' },
-  shortHooks: { ar: 'قصير', en: 'Short' },
-  
   // Community Section
   communitySectionTitle: { ar: 'المجتمع والتفاعل', en: 'Community & Engagement' },
   postIdeaGeneratorTitle: { ar: 'إلهام اليوم', en: 'Today\'s Inspiration' },
