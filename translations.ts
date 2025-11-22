@@ -45,6 +45,16 @@ export const translations = {
   postContentTitle: { ar: 'محتوى المنشور', en: 'Post Content' },
   postContentPlaceholder: { ar: 'سيظهر هنا النص والهاشتاجات التي تم إنشاؤها.', en: 'Your generated text and hashtags will appear here.' },
   
+  // Schedule Reminder
+  scheduleReminder: { ar: 'جدولة تذكير', en: 'Schedule Reminder' },
+  pickDateTime: { ar: 'اختر التاريخ والوقت', en: 'Pick Date & Time' },
+  setReminder: { ar: 'تعيين التذكير', en: 'Set Reminder' },
+  reminderSet: { ar: 'تم تعيين التذكير!', en: 'Reminder Set!' },
+  reminderTitle: { ar: 'تذكير بالنشر', en: 'Post Reminder' },
+  timeFor: { ar: 'حان الوقت لنشر: ', en: 'It\'s time to post: ' },
+  cancel: { ar: 'إلغاء', en: 'Cancel' },
+  simulatedEmailSent: { ar: 'تم إرسال البريد الإلكتروني (محاكاة) إلى', en: 'Email sent (simulated) to' },
+  
   // Community Section
   communitySectionTitle: { ar: 'المجتمع والتفاعل', en: 'Community & Engagement' },
   postIdeaGeneratorTitle: { ar: 'إلهام اليوم', en: 'Today\'s Inspiration' },
