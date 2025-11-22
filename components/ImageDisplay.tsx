@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ImageIcon, WandIcon, SpinnerIcon } from './icons';
 import { useI18n } from '../contexts/I18nContext';
@@ -15,34 +14,30 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({ isLoading, imageUrl, isEnha
     const { t } = useI18n();
 
     return (
-        <div className="relative w-full aspect-square bg-surfaceHighlight border border-border rounded-2xl overflow-hidden flex items-center justify-center shadow-md group">
+        <div className="relative bg-brand-medium p-4 rounded-xl shadow-lg aspect-square flex items-center justify-center">
             {isLoading && (
-                <div className="w-full h-full bg-surfaceHighlight animate-pulse-slow flex items-center justify-center">
-                    <div className="flex flex-col items-center text-primary/50">
-                         <SpinnerIcon />
-                    </div>
-                </div>
+                <div className="w-full h-full bg-gray-700 rounded-lg animate-pulse-slow"></div>
             )}
             {!isLoading && imageUrl && (
                 <>
-                    <img src={imageUrl} alt="Generated social media post" className={`w-full h-full object-cover transition-opacity duration-500 ${isEnhancing ? 'opacity-50 blur-sm' : 'opacity-100'}`} />
+                    <img src={imageUrl} alt="Generated social media post" className={`w-full h-full object-cover rounded-lg transition-opacity duration-300 ${isEnhancing ? 'opacity-50' : 'opacity-100'}`} />
                     
                     {isEnhancing && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-lg">
                             <SpinnerIcon />
-                            <p className="text-white mt-3 font-semibold tracking-wide">{t('enhancing')}</p>
+                            <p className="text-white mt-2 font-semibold">{t('enhancing')}</p>
                         </div>
                     )}
                     
                     {!isEnhancing && (
-                         <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                         <div className="absolute bottom-4 right-4">
                             <button
                                 onClick={onEnhance}
                                 disabled={isEnhanced || isLoading}
-                                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-lg transition-all duration-300 backdrop-blur-md border
+                                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange disabled:opacity-80
                                     ${isEnhanced
-                                        ? 'bg-green-500/90 border-green-500 text-white cursor-default'
-                                        : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                                        ? 'bg-brand-green text-white cursor-default'
+                                        : 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed'
                                     }
                                 `}
                                 aria-label={isEnhanced ? t('enhancedAriaLabel') : t('enhanceAriaLabel')}
@@ -55,11 +50,9 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({ isLoading, imageUrl, isEnha
                 </>
             )}
             {!isLoading && !imageUrl && (
-                 <div className="flex flex-col items-center text-center p-8">
-                    <div className="w-20 h-20 bg-surface border border-border rounded-full flex items-center justify-center text-text-muted mb-4">
-                         <ImageIcon />
-                    </div>
-                    <p className="text-text-muted font-medium">{t('imageWillAppear')}</p>
+                 <div className="text-center text-gray-500">
+                    <ImageIcon />
+                    <p className="mt-2">{t('imageWillAppear')}</p>
                 </div>
             )}
         </div>

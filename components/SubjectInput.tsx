@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useI18n } from '../contexts/I18nContext';
 
@@ -10,23 +9,23 @@ interface SubjectInputProps {
 const SubjectInput: React.FC<SubjectInputProps> = ({ subject, onSubjectChange }) => {
     const { t } = useI18n();
     return (
-        <div className="w-full">
-            <label htmlFor="subject-info" className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 ml-1">
+        <div className="bg-brand-medium p-4 rounded-xl shadow-lg border border-gray-700">
+            <label htmlFor="subject-info" className="block text-sm font-medium text-gray-300 mb-2 text-center">
                 {t('subjectTitle')}
             </label>
+            <p className="text-xs text-center text-gray-500 mb-3">
+                {t('subjectDescription')}
+            </p>
             <input
                 id="subject-info"
                 type="text"
                 value={subject}
                 onChange={(e) => onSubjectChange(e.target.value)}
-                className="w-full bg-surfaceHighlight border border-border rounded-xl px-4 py-3 text-base text-white placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200"
+                className="w-full bg-brand-dark border border-gray-600 rounded-lg p-3 text-sm text-gray-300 focus:ring-brand-orange focus:border-brand-orange transition duration-200"
                 placeholder={t('subjectPlaceholder')}
                 aria-label="Post subject input"
                 required
             />
-            <p className="text-xs text-text-muted mt-2 ml-1">
-                {t('subjectDescription')}
-            </p>
         </div>
     );
 };

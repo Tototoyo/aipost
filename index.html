@@ -5,40 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Post Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
-        darkMode: 'class',
         theme: {
           extend: {
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
             colors: {
-              background: '#020617', // Slate 950
-              surface: '#0f172a',    // Slate 900
-              surfaceHighlight: '#1e293b', // Slate 800
-              border: '#334155',     // Slate 700
-              text: {
-                main: '#f8fafc',     // Slate 50
-                muted: '#94a3b8',    // Slate 400
+              brand: {
+                orange: '#FFA500',
+                green: '#2ECC71',
+                dark: '#111827',
+                light: '#F3F4F6',
+                medium: '#1F2937'
               },
-              primary: {
-                DEFAULT: '#6366f1', // Indigo 500
-                hover: '#4f46e5',   // Indigo 600
-                light: '#818cf8',   // Indigo 400
-              },
-              secondary: '#a855f7', // Purple 500
             },
             animation: {
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'fade-in': 'fadeIn 0.5s ease-out forwards',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              }
             }
           }
         }
@@ -51,32 +32,12 @@
     "react/": "https://esm.sh/react@^19.1.1/",
     "react": "https://esm.sh/react@^19.1.1",
     "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.45.0",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.45.0"
   }
 }
 </script>
-<style>
-  body {
-    font-family: 'Inter', sans-serif;
-  }
-  /* Custom scrollbar for a cleaner look */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #020617;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
-  }
-</style>
 </head>
-<body class="bg-background text-text-main antialiased selection:bg-primary selection:text-white">
+<body class="bg-brand-dark">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>

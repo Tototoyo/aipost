@@ -2,7 +2,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { CopyIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, DocumentTextIcon } from './icons';
+import { CopyIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import { useI18n } from '../contexts/I18nContext';
 
 interface PostContentProps {
@@ -54,33 +54,23 @@ const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags
 
 
     return (
-        <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-6 shadow-lg h-full flex flex-col min-h-[400px]">
+        <div className="bg-brand-medium p-6 rounded-xl shadow-lg h-full flex flex-col">
             {isLoading && (
-                <div className="space-y-6 animate-pulse">
-                    <div className="h-6 bg-surfaceHighlight rounded w-1/3"></div>
-                    <div className="space-y-3">
-                        <div className="h-4 bg-surfaceHighlight rounded w-full"></div>
-                        <div className="h-4 bg-surfaceHighlight rounded w-full"></div>
-                        <div className="h-4 bg-surfaceHighlight rounded w-5/6"></div>
-                    </div>
-                     <div className="h-4 bg-surfaceHighlight rounded w-full mt-8"></div>
+                <div className="space-y-4">
+                    <div className="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                    <div className="h-4 bg-gray-700 rounded w-full animate-pulse"></div>
+                    <div className="h-4 bg-gray-700 rounded w-1/2 animate-pulse"></div>
+                    <div className="h-4 bg-gray-700 rounded w-full mt-6 animate-pulse"></div>
                 </div>
             )}
             {!isLoading && captions && captions.length > 0 && hashtags && (
                 <div className="flex flex-col flex-grow">
-                    <div className="flex justify-between items-center mb-6 border-b border-border pb-4">
-                         <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                            {t('postSuggestions')}
-                             <span className="bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full">{currentIndex + 1}/{totalCaptions}</span>
-                         </h2>
-                         <div className="flex gap-2">
+                    <div className="flex justify-between items-start mb-4 gap-2">
+                         <h2 className="text-2xl font-bold text-brand-light">{t('postSuggestions')}</h2>
+                         <div className="flex gap-2 flex-shrink-0">
                             <button 
                                 onClick={() => handleCopy(fullText)}
-                                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 border
-                                    ${isCopied 
-                                        ? 'bg-green-500/10 text-green-400 border-green-500/20' 
-                                        : 'bg-surfaceHighlight text-text-muted hover:text-white border-border hover:border-gray-500'}
-                                `}
+                                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors duration-200 bg-gray-700 hover:bg-gray-600 text-brand-light disabled:opacity-50"
                                 disabled={!fullText}
                             >
                                 {isCopied ? <CheckIcon /> : <CopyIcon />}
@@ -89,41 +79,29 @@ const PostContent: React.FC<PostContentProps> = ({ isLoading, captions, hashtags
                          </div>
                     </div>
                     
-                    <div className="relative flex-grow mb-8">
-                        <p className="text-text-main text-lg leading-relaxed whitespace-pre-wrap font-light">{currentCaption}</p>
-                    </div>
-                    
-                    <div className="bg-surfaceHighlight/30 p-4 rounded-xl border border-border mb-6">
-                        <p className="text-primary text-sm font-medium break-words leading-relaxed">{hashtags}</p>
+                    <div className="relative flex-grow mb-4 min-h-[100px]">
+                        <p className="text-gray-300 whitespace-pre-wrap">{currentCaption}</p>
                     </div>
 
                     {totalCaptions > 1 && (
-                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
-                            <button onClick={handlePrev} className="p-3 rounded-full hover:bg-surfaceHighlight text-text-muted hover:text-white transition-colors" aria-label={t('previousSuggestion')}>
+                        <div className="flex items-center justify-center gap-4 mb-4">
+                            <button onClick={handlePrev} className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors text-gray-300 hover:text-white" aria-label={t('previousSuggestion')}>
                                 {language === 'ar' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                             </button>
-                            
-                             <div className="flex gap-1.5">
-                                {captions.map((_, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-primary w-6' : 'bg-border'}`}
-                                    ></div>
-                                ))}
-                            </div>
-
-                            <button onClick={handleNext} className="p-3 rounded-full hover:bg-surfaceHighlight text-text-muted hover:text-white transition-colors" aria-label={t('nextSuggestion')}>
+                            <span className="font-mono text-sm text-gray-400 select-none">{currentIndex + 1} / {totalCaptions}</span>
+                            <button onClick={handleNext} className="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors text-gray-300 hover:text-white" aria-label={t('nextSuggestion')}>
                                 {language === 'ar' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                             </button>
                         </div>
                     )}
+
+                    <p className="text-brand-orange mt-auto text-sm font-medium break-words pt-4 border-t border-gray-700/50">{hashtags}</p>
                 </div>
             )}
             {!isLoading && (!captions || captions.length === 0) && (
-                <div className="text-center flex-grow flex flex-col justify-center items-center opacity-50">
-                    <DocumentTextIcon />
-                    <h2 className="text-xl font-bold text-text-muted mt-4 mb-2">{t('postContentTitle')}</h2>
-                    <p className="text-sm text-gray-500 max-w-xs">{t('postContentPlaceholder')}</p>
+                <div className="text-center text-gray-500 flex-grow flex flex-col justify-center items-center">
+                    <h2 className="text-2xl font-bold text-gray-400 mb-2">{t('postContentTitle')}</h2>
+                    <p>{t('postContentPlaceholder')}</p>
                 </div>
             )}
         </div>

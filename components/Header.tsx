@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useI18n } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -18,55 +17,46 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
     };
     
     return (
-        <header className="relative w-full z-40">
-            <nav className="flex items-center justify-between py-6">
+        <header className="relative">
+            {/* --- Navigation Bar --- */}
+            <nav className="flex items-center justify-between py-4">
                 {/* Logo */}
-                <a href="#" className="flex items-center gap-2 group">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                        <SparklesIcon />
-                    </div>
-                    <span className="text-xl font-bold text-white tracking-tight">AI Post Gen</span>
+                <a href="#" className="flex items-center gap-2 text-xl font-bold text-brand-light">
+                    <SparklesIcon/>
+                    <span>AI Post Gen</span>
                 </a>
 
                 {/* Desktop Nav Links */}
                 <div className="hidden md:flex items-center gap-8">
-                    <a href="#features" className="text-sm font-medium text-text-muted hover:text-primary transition-colors">Features</a>
-                    <a href="#community" className="text-sm font-medium text-text-muted hover:text-primary transition-colors">Community</a>
+                    <a href="#features" className="text-gray-300 hover:text-brand-orange transition-colors">Features</a>
+                    <a href="#community" className="text-gray-300 hover:text-brand-orange transition-colors">Community</a>
                 </div>
 
                 {/* Desktop Auth & Language Buttons */}
-                <div className="hidden md:flex items-center gap-4">
-                    <button 
-                        onClick={toggleLanguage} 
-                        className="text-text-muted hover:text-white transition-colors"
-                        aria-label="Toggle language"
-                    >
-                        <GlobeAltIcon />
-                    </button>
-
+                <div className="hidden md:flex items-center gap-2">
                     {user ? (
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm text-text-muted hidden lg:block">{user.email}</span>
-                            <button 
-                                onClick={logout} 
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-text-muted hover:text-white border border-border rounded-lg hover:bg-surfaceHighlight transition-all"
-                            >
-                                <span>{t('logout')}</span>
+                        <>
+                            <span className="text-sm text-gray-400 hidden lg:block">{user.email}</span>
+                            <button onClick={logout} className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange bg-brand-medium text-gray-300 hover:bg-gray-700/50" aria-label="Logout">
+                                <ArrowLeftOnRectangleIcon />
+                                <span className="hidden lg:inline">{t('logout')}</span>
                             </button>
-                        </div>
+                        </>
                     ) : (
-                        <button 
-                            onClick={onLoginClick} 
-                            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-surfaceHighlight hover:bg-border border border-border rounded-lg transition-all shadow-sm"
-                        >
+                        <button onClick={onLoginClick} className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange bg-gradient-to-r from-brand-orange to-brand-green text-white hover:opacity-90" aria-label="Login or Sign Up">
+                            <UserCircleIcon />
                             <span>{t('loginSignup')}</span>
                         </button>
                     )}
+                    <button onClick={toggleLanguage} className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange bg-brand-medium text-gray-300 hover:bg-gray-700/50" aria-label="Toggle language">
+                        <GlobeAltIcon />
+                        <span className="hidden lg:inline">{t('language')}</span>
+                    </button>
                 </div>
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden">
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-text-muted hover:text-white p-2" aria-label="Open menu">
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-300 hover:text-white" aria-label="Open menu">
                         {isMenuOpen ? <XMarkIcon /> : <MenuIcon />}
                     </button>
                 </div>
@@ -74,27 +64,25 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
             
             {/* --- Mobile Menu --- */}
             {isMenuOpen && (
-                <div className="md:hidden absolute top-20 left-0 w-full bg-surface border border-border rounded-2xl shadow-2xl p-6 z-50 space-y-6 animate-fade-in">
-                    <div className="flex flex-col gap-4">
-                        <a href="#features" onClick={() => setIsMenuOpen(false)} className="text-lg font-medium text-text-muted hover:text-primary">Features</a>
-                        <a href="#community" onClick={() => setIsMenuOpen(false)} className="text-lg font-medium text-text-muted hover:text-primary">Community</a>
-                    </div>
-                    <div className="border-t border-border pt-6 space-y-4">
+                <div className="md:hidden bg-brand-medium rounded-lg shadow-xl p-4 mt-2 space-y-4">
+                    <a href="#features" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:text-brand-orange transition-colors py-2 text-center">Features</a>
+                    <a href="#community" onClick={() => setIsMenuOpen(false)} className="block text-gray-300 hover:text-brand-orange transition-colors py-2 text-center">Community</a>
+                    <div className="border-t border-gray-700 pt-4 flex flex-col gap-3">
                          {user ? (
                             <>
-                                <p className="text-sm text-text-muted">{user.email}</p>
-                                <button onClick={() => { logout(); setIsMenuOpen(false); }} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-surfaceHighlight hover:bg-border text-white transition-all">
+                                <p className="text-sm text-center text-gray-400">{user.email}</p>
+                                <button onClick={() => { logout(); setIsMenuOpen(false); }} className="flex w-full justify-center items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-brand-medium text-gray-300 hover:bg-gray-700/50">
                                     <ArrowLeftOnRectangleIcon />
                                     <span>{t('logout')}</span>
                                 </button>
                             </>
                         ) : (
-                            <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-primary hover:bg-primary-hover text-white transition-all">
+                            <button onClick={() => { onLoginClick(); setIsMenuOpen(false); }} className="flex w-full justify-center items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-brand-orange to-brand-green text-white">
                                 <UserCircleIcon />
                                 <span>{t('loginSignup')}</span>
                             </button>
                         )}
-                        <button onClick={toggleLanguage} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-surfaceHighlight hover:bg-border text-text-muted transition-all">
+                        <button onClick={toggleLanguage} className="flex w-full justify-center items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-brand-medium text-gray-300 hover:bg-gray-700/50">
                             <GlobeAltIcon />
                             <span>{t('language')}</span>
                         </button>
@@ -103,11 +91,11 @@ const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
             )}
 
             {/* --- Hero Section --- */}
-            <div className="text-center py-12 sm:py-16 max-w-3xl mx-auto">
-                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
+            <div className="text-center pt-12 sm:pt-16">
+                 <h1 className="text-4xl sm:text-5xl font-bold text-brand-light">
                     {t('appTitle')}
                 </h1>
-                <p className="mt-6 text-lg text-text-muted leading-relaxed">
+                <p className="mt-3 text-lg text-gray-400 max-w-2xl mx-auto">
                     {t('appSubtitle')}
                 </p>
             </div>

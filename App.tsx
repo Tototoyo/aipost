@@ -97,11 +97,12 @@ const App: React.FC = () => {
             return;
         }
 
-        const bgColors = ['bg-slate-700', 'bg-indigo-700', 'bg-purple-700', 'bg-rose-700', 'bg-emerald-700'];
+        const bgColors = ['bg-slate-700', 'bg-sky-700', 'bg-emerald-700', 'bg-rose-700', 'bg-violet-700'];
         const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
         
         const firstCaption = `${postToShare.captions[0]}\n\n${postToShare.hashtags}`;
         
+        // Ensure caption object has both language keys, even if content is the same, for schema consistency.
         const captionContent = { en: firstCaption, ar: firstCaption };
 
         const newPostData = {
@@ -191,104 +192,100 @@ const App: React.FC = () => {
                 return <CommunityShowcasePage onLoginClick={handleLoginClick} />;
             default:
                 return (
-                    <div className="min-h-screen bg-background text-text-main font-sans flex flex-col">
-                        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-grow pb-20">
+                    <div className="min-h-screen bg-brand-dark text-brand-light font-sans flex flex-col">
+                        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex-grow">
                             <Header onLoginClick={handleLoginClick} />
-                            <main className="mt-10 animate-fade-in">
-                                <div id="features" className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                                    {/* Left Column: Controls */}
-                                    <div className="lg:col-span-4 space-y-6">
-                                        <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-6 shadow-lg space-y-8">
-                                            <div className="space-y-6">
-                                                <SubjectInput subject={subject} onSubjectChange={setSubject} />
-                                                <TemplateSelector selectedTemplate={template} onTemplateChange={setTemplate} />
-                                            </div>
+                            <main className="mt-8">
+                                <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    {/* Control Panel */}
+                                    <div className="md:col-span-1 space-y-6">
+                                        <SubjectInput subject={subject} onSubjectChange={setSubject} />
+                                        
+                                        <div className="bg-brand-medium p-4 rounded-xl shadow-lg space-y-4 border border-gray-700">
+                                            <h3 className="text-lg font-semibold text-center text-gray-200">
+                                                {t('brandCustomizationTitle')}
+                                            </h3>
+                                            <BrandInfoInput brandInfo={brandInfo} onBrandInfoChange={setBrandInfo} />
+                                            <TemplateSelector selectedTemplate={template} onTemplateChange={setTemplate} />
+                                        </div>
 
-                                            <div className="pt-6 border-t border-border space-y-6">
-                                                <BrandInfoInput brandInfo={brandInfo} onBrandInfoChange={setBrandInfo} />
-                                            </div>
-
-                                            <div className="pt-6 border-t border-border space-y-6">
-                                                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">{t('generationModeLabel')}</h3>
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <button
-                                                        key="full"
-                                                        onClick={() => setGenerationMode('full')}
-                                                        className={`
-                                                            flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
-                                                            ${generationMode === 'full'
-                                                                ? 'bg-primary/10 text-primary border border-primary'
-                                                                : 'bg-surfaceHighlight text-text-muted border border-transparent hover:bg-surfaceHighlight/80'
-                                                            }
-                                                        `}
-                                                    >
-                                                        <PhotoIcon />
-                                                        <span>{t('textAndImage')}</span>
-                                                    </button>
-                                                    <button
-                                                        key="textOnly"
-                                                        onClick={() => setGenerationMode('textOnly')}
-                                                        className={`
-                                                            flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
-                                                            ${generationMode === 'textOnly'
-                                                                ? 'bg-primary/10 text-primary border border-primary'
-                                                                : 'bg-surfaceHighlight text-text-muted border border-transparent hover:bg-surfaceHighlight/80'
-                                                            }
-                                                        `}
-                                                    >
-                                                        <DocumentTextIcon />
-                                                        <span>{t('textOnly')}</span>
-                                                    </button>
-                                                </div>
-
-                                                <ImageStyleSelector selectedStyle={imageStyle} onStyleChange={setImageStyle} />
-                                                <ToneSelector selectedTone={tone} onToneChange={setTone} />
-                                                
-                                                <div className="pt-4">
-                                                    <GenerateButton isLoading={isLoading} onClick={handleGeneratePost} disabled={!subject.trim()} />
-                                                </div>
+                                        <div>
+                                            <label className="block text-center text-sm font-medium text-gray-400 mb-2">
+                                                {t('generationModeLabel')}
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-2 rounded-lg bg-brand-medium p-1">
+                                                <button
+                                                    key="full"
+                                                    onClick={() => setGenerationMode('full')}
+                                                    className={`
+                                                        flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
+                                                        ${generationMode === 'full'
+                                                            ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
+                                                            : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
+                                                        }
+                                                    `}
+                                                    aria-pressed={generationMode === 'full'}
+                                                >
+                                                    <PhotoIcon />
+                                                    <span>{t('textAndImage')}</span>
+                                                </button>
+                                                <button
+                                                    key="textOnly"
+                                                    onClick={() => setGenerationMode('textOnly')}
+                                                    className={`
+                                                        flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-semibold rounded-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-dark focus:ring-brand-orange
+                                                        ${generationMode === 'textOnly'
+                                                            ? 'bg-gradient-to-r from-brand-orange to-brand-green text-white shadow'
+                                                            : 'bg-brand-medium text-gray-300 hover:bg-gray-700/50'
+                                                        }
+                                                    `}
+                                                    aria-pressed={generationMode === 'textOnly'}
+                                                >
+                                                    <DocumentTextIcon />
+                                                    <span>{t('textOnly')}</span>
+                                                </button>
                                             </div>
                                         </div>
+                                        <ImageStyleSelector selectedStyle={imageStyle} onStyleChange={setImageStyle} />
+                                        <ToneSelector selectedTone={tone} onToneChange={setTone} />
+                                        <GenerateButton isLoading={isLoading} onClick={handleGeneratePost} disabled={!subject.trim()} />
                                     </div>
 
-                                    {/* Right Column: Results */}
-                                    <div className="lg:col-span-8 space-y-6">
+                                    {/* Results Area */}
+                                    <div className="md:col-span-2 space-y-8">
                                         {error && (
-                                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
-                                                <ErrorIcon />
-                                                <span className="text-sm font-medium">{error}</span>
+                                            <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg relative flex items-center gap-3">
+                                            <ErrorIcon />
+                                                <span className="block sm:inline">{error}</span>
                                             </div>
                                         )}
                                         
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                                            <div className="lg:col-span-1 w-full">
-                                                <ImageDisplay 
-                                                    isLoading={isLoading} 
-                                                    imageUrl={post?.imageUrl ?? null}
-                                                    isEnhancing={isEnhancing}
-                                                    isEnhanced={isEnhanced}
-                                                    onEnhance={handleEnhanceImage} 
-                                                />
-                                            </div>
-                                            <div className="lg:col-span-1 w-full h-full">
-                                                <PostContent 
-                                                    isLoading={isLoading} 
-                                                    captions={post?.captions ?? null} 
-                                                    hashtags={post?.hashtags ?? null}
-                                                />
-                                            </div>
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                                            <ImageDisplay 
+                                                isLoading={isLoading} 
+                                                imageUrl={post?.imageUrl ?? null}
+                                                isEnhancing={isEnhancing}
+                                                isEnhanced={isEnhanced}
+                                                onEnhance={handleEnhanceImage} 
+                                            />
+                                            <PostContent 
+                                                isLoading={isLoading} 
+                                                captions={post?.captions ?? null} 
+                                                hashtags={post?.hashtags ?? null}
+                                            />
                                         </div>
-
-                                        {post && (
-                                            <div className="animate-fade-in">
-                                                <AICommentReplyGenerator post={post} />
-                                            </div>
-                                        )}
-
-                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                                            <PostIdeaGenerator />
-                                            <CommunityShowcase posts={showcasePosts} />
-                                        </div>
+                                        {post && <AICommentReplyGenerator post={post} />}
+                                    </div>
+                                </div>
+                                
+                                {/* Community & Engagement Section */}
+                                <div id="community" className="mt-12 border-t border-gray-700 pt-8">
+                                    <h2 className="text-3xl font-bold text-center mb-8">
+                                        <span className="text-brand-light">{t('communitySectionTitle')}</span>
+                                    </h2>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        <PostIdeaGenerator />
+                                        <CommunityShowcase posts={showcasePosts} />
                                     </div>
                                 </div>
                             </main>
