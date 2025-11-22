@@ -19,6 +19,7 @@ import { useI18n } from './contexts/I18nContext';
 import SubjectInput from './components/SubjectInput';
 import AuthModal from './components/AuthModal';
 import ScheduleModal from './components/ScheduleModal';
+import ViralHookGenerator from './components/ViralHookGenerator';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './supabaseClient';
 import AboutPage from './components/AboutPage';
@@ -323,6 +324,7 @@ const App: React.FC = () => {
                                             />
                                         </div>
                                         {post && <AICommentReplyGenerator post={post} />}
+                                        <ViralHookGenerator subject={subject} />
                                     </div>
                                 </div>
                                 

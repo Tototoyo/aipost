@@ -26,3 +26,11 @@ export interface Reminder {
     scheduledTime: string;
     contentSnippet?: string;
 }
+
+export interface ViralHooks {
+    curiosity: string[];
+    controversial: string[];
+    story: string[];
+    emotional: string[];
+    short: string[];
+}

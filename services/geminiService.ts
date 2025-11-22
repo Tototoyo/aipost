@@ -1,5 +1,7 @@
+
 import OpenAI from 'openai';
-import type { SocialMediaPost } from "../types";
+import { GoogleGenAI, Type } from "@google/genai";
+import type { SocialMediaPost, ViralHooks } from "../types";
 import type { Language } from "../contexts/I18nContext";
 
 // In accordance with OpenAI API guidelines, initialize the client.
@@ -8,6 +10,9 @@ const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true, // This is required for client-side usage.
 });
+
+// Gemini client for new features
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || import.meta.env.VITE_OPENAI_API_KEY }); // Fallback for demo environment
 
 const textModel = 'gpt-4o';
 const imageGenerationModel = 'dall-e-3';
@@ -299,3 +304,53 @@ export const generateReplies = async (postCaption: string, language: Language): 
         throw new Error(isArabic ? "حدث خطأ غير معروف أثناء إنشاء الردود." : "An unknown error occurred while generating replies.");
     }
 };
+
+export const generateViralHooks = async (subject: string, language: Language): Promise<ViralHooks> => {
+    const isArabic = language === 'ar';
+    try {
+        const prompt = `
+        Generate viral hooks for a social media post about: "${subject}".
+        
+        Categories:
+        1. Curiosity (makes them wonder)
+        2. Controversial (challenges a belief)
+        3. Story (starts a narrative)
+        4. Emotional (triggers feeling)
+        5. Short (punchy, under 10 words)
+
+        Language: ${isArabic ? 'Arabic' : 'English'}.
+        Return 3 distinct hooks for each category.
+        `;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        curiosity: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        controversial: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        story: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        emotional: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        short: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    }
+                }
+            }
+        });
+        
+        if (!response.text) {
+             throw new Error(isArabic ? "كانت استجابة الواجهة البرمجية فارغة." : "The API response was empty.");
+        }
+
+        return JSON.parse(response.text);
+
+    } catch (error) {
+        console.error("Error generating viral hooks:", error);
+         if (error instanceof Error) {
+            throw new Error(`${isArabic ? 'فشل في إنشاء العناوين' : 'Failed to generate hooks'}: ${error.message}`);
+        }
+        throw new Error(isArabic ? "حدث خطأ غير معروف." : "An unknown error occurred.");
+    }
+}
